@@ -4,12 +4,12 @@ from os.path import isfile, join
 
 class Dicts():
     def __init__(self):
-        self.train_path='fine_images/train/'
-        self.val_path='fine_images/val/'
-        self.test_path='fine_images/test/'
-        self.mask_path_train='fine_masks/train/'
-        self.mask_path_val='fine_masks/val/'
-        self.mask_path_test='fine_masks/test/'
+        self.train_path='data_img/train/'
+        self.val_path='data_img/val/'
+        self.test_path='data_img/test/'
+        self.mask_path_train='data_mask/train/'
+        self.mask_path_val='data_mask/val/'
+        self.mask_path_test='data_mask/test/'
         
     def get_dicts(self):
         train_files={}

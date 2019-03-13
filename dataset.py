@@ -13,10 +13,11 @@ import torch
 
 
 class PlacesDataset(data.Dataset):
-    def __init__(self,dic,augment,transforms=False):
+    def __init__(self,dic,augment,normalize_augment=False, transforms=False):
         self.dic=dic
         self.transforms=transforms
         self.augments=augment
+        self.normalize_augment=normalize_augment
         self.img_size=(512, 1024)
         self.colors = [  # [  0,   0,   0],
         [128, 64, 128],
@@ -87,7 +88,7 @@ class PlacesDataset(data.Dataset):
             "bicycle",
         ]
 
-        self.ignore_index = 250
+        self.ignore_index = 19
         self.class_map = dict(zip(self.valid_classes, range(19)))
 
     def __len__(self):
@@ -108,6 +109,9 @@ class PlacesDataset(data.Dataset):
             y=np.random.randint(low=0,high=1024)
             img=img[x:x+512,y:y+1024,:]
             lbl=lbl[x:x+512,y:y+1024]
+            
+        if self.normalize_augment==True:
+            noise=np.random.normal(scale=0.07,size=(3,512,1024))
         #if self.augments==1:
          #   img=img[:512,:1024,:]
          #   lbl=lbl[:512,:1024]    
@@ -126,8 +130,11 @@ class PlacesDataset(data.Dataset):
             
         if self.transforms==True:
             img,lbl=self.transform(img,lbl)
-        
-        return img, lbl
+            
+        if self.normalize_augment==True:
+            return img+torch.from_numpy(noise).float(), lbl
+        else:
+            return img,lbl
             
     def encode_segmap(self,mask):
         for _voidc in self.void_classes:
