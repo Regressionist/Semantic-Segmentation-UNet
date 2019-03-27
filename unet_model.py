@@ -40,7 +40,7 @@ class Unet(nn.Module):
         self.conv9a=nn.Sequential(nn.Conv2d(128,64,3,1,0),nn.BatchNorm2d(64),nn.ReLU())
         self.conv9b=nn.Sequential(nn.Conv2d(64,64,3,1,0),nn.BatchNorm2d(64),nn.ReLU())
         
-        self.conv9_final=nn.Conv2d(64,21,1)
+        self.conv9_final=nn.Conv2d(64,20,1)
         
     def forward(self,input_image):
         conv1=self.conv1b(self.conv1a(input_image))

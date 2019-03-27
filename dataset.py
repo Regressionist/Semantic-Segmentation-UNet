@@ -10,14 +10,13 @@ import scipy.misc as m
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 from torch.utils import data
 import torch
-
+from skimage.segmentation import find_boundaries as fb
 
 class PlacesDataset(data.Dataset):
-    def __init__(self,dic,augment,normalize_augment=False, transforms=False):
+    def __init__(self,dic,augment, transforms=False):
         self.dic=dic
         self.transforms=transforms
         self.augments=augment
-        self.normalize_augment=normalize_augment
         self.img_size=(512, 1024)
         self.colors = [  # [  0,   0,   0],
         [128, 64, 128],
@@ -88,7 +87,7 @@ class PlacesDataset(data.Dataset):
             "bicycle",
         ]
 
-        self.ignore_index = 19
+        self.ignore_index = 255
         self.class_map = dict(zip(self.valid_classes, range(19)))
 
     def __len__(self):
@@ -104,37 +103,28 @@ class PlacesDataset(data.Dataset):
         lbl = io.imread(mask_path)
         lbl = self.encode_segmap(np.array(lbl, dtype=np.uint8))
         
-        if self.augments==0:
-            x=np.random.randint(low=0,high=512)
-            y=np.random.randint(low=0,high=1024)
-            img=img[x:x+512,y:y+1024,:]
-            lbl=lbl[x:x+512,y:y+1024]
-            
-        if self.normalize_augment==True:
-            noise=np.random.normal(scale=0.07,size=(3,512,1024))
-        #if self.augments==1:
-         #   img=img[:512,:1024,:]
-         #   lbl=lbl[:512,:1024]    
-        #elif self.augments==2:
-         #   img=img[512:,1024:,:]
-         #   lbl=lbl[512:,1024:]
-        #elif self.augments==3:
-         #   img=img[:512,1024:,:]
-          #  lbl=lbl[:512,1024:]
-        #elif self.augments==4:
-         #   img=img[512:,:1024,:]
-         #   lbl=lbl[512:,:1024]
-        #elif self.augments==5:
-         #   img=img[256:768,512:1536,:]
-         #   lbl=img[256:768,512:1536]
-            
+        if self.augments==1:
+                x=np.random.randint(low=0,high=256)
+                y=np.random.randint(low=0,high=512)
+                img=img[x:x+768,y:y+1536,:]
+                lbl=lbl[x:x+768,y:y+1536]
+        elif self.augments==0:
+                x=np.random.randint(low=0,high=384)
+                y=np.random.randint(low=0,high=768)
+                img=img[x:x+640,y:y+1280,:]
+                lbl=lbl[x:x+640,y:y+1280]
+        elif self.augments==2:
+                x=np.random.randint(low=0,high=128)
+                y=np.random.randint(low=0,high=256)
+                img=img[x:x+896,y:y+1792,:]
+                lbl=lbl[x:x+896,y:y+1792]
+                 
         if self.transforms==True:
             img,lbl=self.transform(img,lbl)
-            
-        if self.normalize_augment==True:
-            return img+torch.from_numpy(noise).float(), lbl
-        else:
-            return img,lbl
+        mask=fb(lbl.cpu().numpy(),mode='outer').astype(np.uint8)
+        mask+=1
+        mask=torch.from_numpy(mask).type(torch.FloatTensor)
+        return img,lbl,mask
             
     def encode_segmap(self,mask):
         for _voidc in self.void_classes:
