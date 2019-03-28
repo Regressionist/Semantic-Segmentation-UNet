@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import torch
 from torch.utils import data
 from dataset import PlacesDataset
-from data_dicts import Dicts
+from data_dicts_hpc import Dicts
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
