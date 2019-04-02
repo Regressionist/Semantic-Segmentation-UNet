@@ -53,7 +53,7 @@ def train(unet,input_image,target_image,masks,optimizer):
 def validation(unet,input_image,target_image):
     with torch.no_grad():
         unet.eval()
-        output_image,_,_,_=unet(input_image)
+        output_image=unet(input_image)
         loss=val_loss_function(output_image,target_image)
         return loss
 
