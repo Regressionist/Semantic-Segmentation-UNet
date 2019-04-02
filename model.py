@@ -12,7 +12,7 @@ from torch.autograd import Variable
 from torch.optim import Adam,SGD
 from sklearn.metrics import jaccard_similarity_score as jss
 from skimage.segmentation import find_boundaries as fb
-from unet_modified import Unet
+from unet_model import Unet
 from loss_functions import train_loss_function_variance, val_loss_function
 import os
 
