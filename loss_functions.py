@@ -25,7 +25,7 @@ def train_loss_function(input_image,target_image,masks):
         
     return loss
 
-def train_loss_function_variance(input_image,input_image_b,input_image_c,input_image_d,target_image,masks,lambda_varloss):
+def train_loss_function_variance(input_image,input_image_b,input_image_c,input_image_d,target_image,masks,lamda):
     n,c,h,w=input_image.size()
     nt,ht,wt=target_image.size()
     assert c==20
@@ -48,7 +48,7 @@ def train_loss_function_variance(input_image,input_image_b,input_image_c,input_i
         else:
             loss+=(F.cross_entropy(input_image[i].view(-1,c),target_image[i].view(-1),reduction='none')*mask.view(-1)).mean()
         
-    return loss+lambda_varloss*mean_var_loss
+    return loss+lamda*mean_var_loss
 
 def val_loss_function(output_model,target):
     n,c,h,w=output_model.size()

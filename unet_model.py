@@ -60,9 +60,15 @@ class Unet(nn.Module):
         conv6=self.up2(self.conv6b(self.conv6a(self.merge(conv5,conv4))))
         conv7=self.up3(self.conv7b(self.conv7a(self.merge(conv6,conv3))))
         conv8=self.up4(self.conv8b(self.conv8a(self.merge(conv7,conv2))))
-        conv9=self.conv9_final(self.conv9b(self.conv9a(self.merge(conv8,conv1))))
-        
-        return conv9
+        conv9_temp=self.conv9b(self.conv9a(self.merge(conv8,conv1)))
+        conv9=self.conv9_final(conv9_temp)
+        if self.training:
+            conv9_a=self.conv9_final(F.dropout(conv9_temp,p=0.3))
+            conv9_b=self.conv9_final(F.dropout(conv9_temp,p=0.3))
+            conv9_c=self.conv9_final(F.dropout(conv9_temp,p=0.3))
+            return conv9,conv9_a,conv9_b,conv9_c
+        else:
+            return conv9
         
     def merge(self,outputs,inputs):
         offset = outputs.size()[2] - inputs.size()[2]

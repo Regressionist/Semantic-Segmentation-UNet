@@ -3,11 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class Unet(nn.Module):
-    def __init__(self,drop_p=0.2, lambda_varloss=100):
+    def __init__(self):
         super(Unet,self).__init__()
-        self.drop_p = drop_p
-        self.lambda_varloss = lambda_varloss
-
         self.conv1a=nn.Sequential(nn.Conv2d(3,64,3,1,0),nn.BatchNorm2d(64),nn.ReLU())
         self.conv1b=nn.Sequential(nn.Conv2d(64,64,3,1,0),nn.BatchNorm2d(64),nn.ReLU())
         self.maxpool1 = nn.MaxPool2d(kernel_size=2)
@@ -45,9 +42,9 @@ class Unet(nn.Module):
         
         self.conv9_final=nn.Conv2d(64,20,1)
         
-        self.drop_layer_1 = nn.Dropout(p=self.drop_p)
-        self.drop_layer_2 = nn.Dropout(p=self.drop_p)
-        self.drop_layer_3 = nn.Dropout(p=self.drop_p)
+        self.drop_layer_1 = nn.Dropout(p=0.2)
+        self.drop_layer_2 = nn.Dropout(p=0.2)
+        self.drop_layer_3 = nn.Dropout(p=0.2)
         
     def forward(self,input_image):
         conv1=self.conv1b(self.conv1a(input_image))
@@ -69,11 +66,11 @@ class Unet(nn.Module):
         conv8=self.up4(self.conv8b(self.conv8a(self.merge(conv7,conv2))))
         conv9_temp=self.conv9b(self.conv9a(self.merge(conv8,conv1)))
         conv9_a=self.conv9_final(conv9_temp)
-        conv9_b=self.conv9_final(self.drop_layer_1(conv9_temp))
-        conv9_c=self.conv9_final(self.drop_layer_2(conv9_temp))
-        conv9_d=self.conv9_final(self.drop_layer_3(conv9_temp))
+        #conv9_b=self.conv9_final(self.drop_layer_1(conv9_temp))
+        #conv9_c=self.conv9_final(self.drop_layer_2(conv9_temp))
+        #conv9_d=self.conv9_final(self.drop_layer_3(conv9_temp))
         
-        return conv9_a,conv9_b,conv9_c,conv9_d
+        return conv9_a#,conv9_b,conv9_c,conv9_d
         
     def merge(self,outputs,inputs):
         offset = outputs.size()[2] - inputs.size()[2]
