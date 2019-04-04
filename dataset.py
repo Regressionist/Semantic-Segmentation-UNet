@@ -17,7 +17,7 @@ class PlacesDataset(data.Dataset):
         self.dic=dic
         self.transforms=transforms
         self.augments=augment
-        self.img_size=(512, 1024)
+        self.img_size=(1024, 2048)
         self.colors = [  # [  0,   0,   0],
         [128, 64, 128],
         [244, 35, 232],
@@ -148,7 +148,7 @@ class PlacesDataset(data.Dataset):
         return rgb
     
     def transform(self,img,lbl):
-        if (img.shape!=(512,1024,3)):
+        if (img.shape!=(1024,2048,3)):
             img = m.imresize(img, (self.img_size[0], self.img_size[1],3))  # uint8 with RGB mode
         img = img[:, :, ::-1]  # RGB -> BGR
         img = img.astype(np.float64)
@@ -156,7 +156,7 @@ class PlacesDataset(data.Dataset):
         img = img.astype(float) / 255.0
         img = img.transpose(2, 0, 1)
         classes = np.unique(lbl)
-        if lbl.shape!=(512,1024):
+        if lbl.shape!=(1024,2048):
             lbl = lbl.astype(float)
             lbl = m.imresize(lbl, (self.img_size[0], self.img_size[1]), "nearest", mode="F")
         lbl = lbl.astype(int)
