@@ -12,7 +12,7 @@ from torch.autograd import Variable
 from torch.optim import Adam,SGD
 from sklearn.metrics import jaccard_similarity_score as jss
 from skimage.segmentation import find_boundaries as fb
-from unet_modified import Unet
+from unet_model import Unet
 from loss_functions import train_loss_function_variance, val_loss_function
 import os
 
@@ -53,7 +53,7 @@ def train(unet,input_image,target_image,masks,optimizer):
 def validation(unet,input_image,target_image):
     with torch.no_grad():
         unet.eval()
-        output_image,_,_,_=unet(input_image)
+        output_image=unet(input_image)
         loss=val_loss_function(output_image,target_image)
         return loss
 
