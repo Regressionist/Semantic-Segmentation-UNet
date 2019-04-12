@@ -3,11 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class Unet(nn.Module):
-    def __init__(self,drop_p=0.2, lambda_varloss=100):
+    def __init__(self):
         super(Unet,self).__init__()
-        self.drop_p = drop_p
-        self.lambda_varloss = lambda_varloss
-        
         self.conv1a=nn.Sequential(nn.Conv2d(3,64,3,1,0),nn.BatchNorm2d(64),nn.ReLU())
         self.conv1b=nn.Sequential(nn.Conv2d(64,64,3,1,0),nn.BatchNorm2d(64),nn.ReLU())
         self.maxpool1 = nn.MaxPool2d(kernel_size=2)
@@ -66,9 +63,9 @@ class Unet(nn.Module):
         conv9_temp=self.conv9b(self.conv9a(self.merge(conv8,conv1)))
         conv9=self.conv9_final(conv9_temp)
         if self.training:
-            conv9_a=self.conv9_final(F.dropout(conv9_temp,p=self.drop_p))
-            conv9_b=self.conv9_final(F.dropout(conv9_temp,p=self.drop_p))
-            conv9_c=self.conv9_final(F.dropout(conv9_temp,p=self.drop_p))
+            conv9_a=self.conv9_final(F.dropout(conv9_temp,p=0.3))
+            conv9_b=self.conv9_final(F.dropout(conv9_temp,p=0.3))
+            conv9_c=self.conv9_final(F.dropout(conv9_temp,p=0.3))
             return conv9,conv9_a,conv9_b,conv9_c
         else:
             return conv9
